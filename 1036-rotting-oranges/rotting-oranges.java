@@ -1,73 +1,52 @@
 class Solution {
+    private static int[] x = {1, -1, 0, 0};
+    private static int[] y = {0, 0, 1, -1};
+
+    private boolean valid(int x, int y, int n, int m, int grid[][]) {
+        if(x>=0 && x<n && y>=0 && y<m)
+            return true;
+        return false;
+    }
 
     public int orangesRotting(int[][] grid) {
+        int n = grid.length;
+        int m = grid[0].length;
 
-        int rows = grid.length;
-        int cols = grid[0].length;
+        Queue<int[]> q = new LinkedList<>();
 
-        Queue<int[]> queue = new LinkedList<>();
-
-        int fresh = 0;
-
-        // Find rotten and fresh oranges
-        for(int r = 0; r < rows; r++) {
-
-            for(int c = 0; c < cols; c++) {
-
-                if(grid[r][c] == 2) {
-                    queue.offer(new int[]{r, c});
+        int freshOrgs = 0;
+        int rottenOrgs = 0;
+        for(int i=0; i<n; i++) {
+            for(int j=0; j<m; j++) {
+                if(grid[i][j] == 2) {
+                    rottenOrgs++;
+                    q.add(new int[]{i,j});
                 }
-
-                if(grid[r][c] == 1) {
-                    fresh++;
-                }
+                else if(grid[i][j] == 1)
+                    freshOrgs++;
             }
         }
 
-        int[][] directions = {
-            {-1, 0},
-            {1, 0},
-            {0, -1},
-            {0, 1}
-        };
+        int time = 0;
+        while(!q.isEmpty() && freshOrgs > 0) {
+            int size = q.size();
 
-        int minutes = 0;
-
-        // BFS
-        while(!queue.isEmpty() && fresh > 0) {
-
-            int size = queue.size();
-
-            for(int i = 0; i < size; i++) {
-
-                int[] curr = queue.poll();
-
-                int r = curr[0];
-                int c = curr[1];
-
-                for(int[] dir : directions) {
-
-                    int nr = r + dir[0];
-                    int nc = c + dir[1];
-
-                    if(nr >= 0 &&
-                       nr < rows &&
-                       nc >= 0 &&
-                       nc < cols &&
-                       grid[nr][nc] == 1) {
-
-                        grid[nr][nc] = 2;
-
-                        fresh--;
-
-                        queue.offer(new int[]{nr, nc});
+            while(size > 0) {
+                int[] node = q.poll();
+                for(int var=0; var<4; var++) {
+                    int row = node[0] + x[var];
+                    int col = node[1] + y[var];
+                    if(valid(row, col, n, m, grid) && grid[row][col]==1) {
+                        q.add(new int[]{row,col});
+                        grid[row][col] = -2;
+                        freshOrgs--;
                     }
                 }
+                size--;
             }
-
-            minutes++;
+            time++;
         }
-
-        return fresh == 0 ? minutes : -1;
+        int ans = freshOrgs > 0 ? -1 : time;
+        return ans;
     }
 }
