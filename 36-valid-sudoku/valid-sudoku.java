@@ -1,21 +1,35 @@
 class Solution {
     public boolean isValidSudoku(char[][] board) {
-        Set<Integer>[] rows = new HashSet[9];
-        Set<Integer>[] cols = new HashSet[9];
-        Set<Integer>[] boxes = new HashSet[9];
-        for (int i = 0; i < 9; i++) {
+        int n = 9;
+        HashSet<Character>[] rows = new HashSet[n];
+        HashSet<Character>[] cols = new HashSet[n];
+        HashSet<Character>[] boxes = new HashSet[n];
+
+        for(int i=0; i<n; i++) {
             rows[i] = new HashSet<>();
             cols[i] = new HashSet<>();
             boxes[i] = new HashSet<>();
         }
 
-        for (int r = 0; r < 9; r++) {
-            for (int c = 0; c < 9; c++) {
-                if (board[r][c] == '.') continue;
-                int num = board[r][c] - '0';
-                int box = (r / 3) * 3 + c / 3;
-                if (!rows[r].add(num) || !cols[c].add(num) || !boxes[box].add(num))
+        for(int i=0; i<board.length; i++) {
+            for(int j=0; j<board[i].length; j++) {
+                char cellVal = board[i][j];
+                
+                if(cellVal == '.')
+                    continue;
+                
+                if(rows[i].contains(cellVal))
                     return false;
+                rows[i].add(cellVal);
+                
+                if(cols[j].contains(cellVal))
+                    return false;
+                cols[j].add(cellVal);
+                
+                int box = 3*(i/3)+(j/3);
+                if(boxes[box].contains(cellVal))
+                    return false;
+                boxes[box].add(cellVal);
             }
         }
         return true;
